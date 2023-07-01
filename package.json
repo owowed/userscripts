@@ -9,10 +9,11 @@
     "./dist"
   ],
   "scripts": {
-    "build": "npx vite build && npx tsc --emitDeclarationOnly"
+    "build": "npx vite build"
   },
   "keywords": [],
   "devDependencies": {
+    "@owowed/oxi": "^0.1.1",
     "@types/node": "^20.3.0",
     "glob": "^10.3.1",
     "prettier": "^2.8.8",

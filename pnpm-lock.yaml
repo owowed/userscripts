@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 devDependencies:
+  '@owowed/oxi':
+    specifier: ^0.1.1
+    version: 0.1.1
   '@types/node':
     specifier: ^20.3.0
     version: 20.3.0
@@ -244,6 +247,11 @@ packages:
 
   /@jridgewell/sourcemap-codec@1.4.15:
     resolution: {integrity: sha512-eF2rxCRulEKXHTRiDrDy6erMYWqNw4LPdQ8UQA4huuxaQsVeRPFl2oM8oDGxMFhJUWZf9McpLtJasDDZb/Bpeg==}
+    dev: true
+
+  /@owowed/oxi@0.1.1:
+    resolution: {integrity: sha512-RJdqqM2s7H/K28vtBeZHVeah+3XuH1LEl9/ND63id6H0STTb5IHFdoEoX6DuqUuvhT2HeXlegQNjzMuiHW33DQ==}
+    engines: {node: ^16.14.0 || >=18.10.0}
     dev: true
 
   /@pkgjs/parseargs@0.11.0:
