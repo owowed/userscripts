@@ -21,7 +21,7 @@ jobs:
       - name: Download dist files
         uses: actions/download-artifact@v3
         with:
-          name: package-dist
+          name: build-dist
           path: ./dist
 
       - name: Setup Git
@@ -48,13 +48,13 @@ jobs:
       - name: Download dist files
         uses: actions/download-artifact@v3
         with:
-          name: package-dist
+          name: build-dist
           path: ./dist
       
       - name: Create zip archive of dist files
         id: archives
         run: |
-          zip_archive="package-dist-$GITHUB_REF_NAME.zip"
+          zip_archive="build-dist-$GITHUB_REF_NAME.zip"
 
           zip -r9 "$zip_archive" dist/*
 

@@ -61,7 +61,7 @@ jobs:
       - name: Download dist artifact
         uses: actions/download-artifact@v3
         with:
-          name: package-dist
+          name: build-dist
           path: ./dist
 
       - name: Get latest draft release information
