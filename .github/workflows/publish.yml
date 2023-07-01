@@ -1,0 +1,66 @@
+name: Build & Publish Package
+
+on:
+  release:
+    types: published
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  push-dist:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download dist files
+        uses: actions/download-artifact@v3
+        with:
+          name: package-dist
+          path: ./dist
+
+      - name: Setup Git
+        uses: ./.github/actions/setup-git
+
+      - name: Push dist files into dist branch
+        run: |
+          git checkout --orphan dist
+          
+          find . -mindepth 1 -maxdepth 1  ! -name 'dist' ! -name '.git' -type d -exec rm -rf {} +
+          mv dist/* .
+          rmdir dist/
+
+          git add .
+          git commit -m 'Push dist files to dist branch'
+          git push -f origin dist
+
+  upload-release-files:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download dist files
+        uses: actions/download-artifact@v3
+        with:
+          name: package-dist
+          path: ./dist
+      
+      - name: Create zip archive of dist files
+        id: archives
+        run: |
+          zip_archive="package-dist-$GITHUB_REF_NAME.zip"
+
+          zip -r9 "$zip_archive" dist/*
+
+          echo "zip_archive=$zip_archive" >> $GITHUB_OUTPUT
+          
+      - name: Upload release files
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ steps.archives.outputs.zip_archive }}

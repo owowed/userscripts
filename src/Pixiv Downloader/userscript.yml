@@ -1,0 +1,10 @@
+
+owowed:id: pixiv-downloader
+name: Pixiv Bulk Downloader
+description: This script will bulk download multiple Pixiv artworks from the artist or artwork page in parrarel.
+version: 1.0.0
+match:
+  - "*://www.pixiv.com/*"
+require:
+  - https://github.com/owowed/oxi/raw/dist/oxi.umd.js
+grant: none
