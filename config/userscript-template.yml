@@ -1,7 +1,8 @@
 
 # template for src/<userscript-name>/userscript.yml
 
-owowed:id: untitled-userscript
+# userscript header
+
 name: ${{ owowed:id }}
 description: https://github.com/owowed/owowed-userscripts
 version: 1.0.0
@@ -17,3 +18,8 @@ grant: none
 license: LGPL-3.0
 updateURL: https://github.com/owowed/owowed-userscripts/raw/dist/${{ owowed:id }}.user.js
 downloadURL: https://github.com/owowed/owowed-userscripts/raw/dist/${{ owowed:id }}.user.js
+
+# owowed-namespaced metadata for the building process
+
+owowed:id: untitled-userscript
+owowed:filename: ${{ owowed:id }}

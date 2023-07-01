@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import monkey, { MonkeyOption, MonkeyUserScript } from "vite-plugin-monkey";
+import monkey, { MonkeyUserScript } from "vite-plugin-monkey";
 import Yaml from "yaml";
 import fs from "fs";
 import { glob } from "glob";
@@ -31,9 +31,8 @@ for (const userjs of userscriptFolders) {
         entry: `${userjs}/index.ts`,
         userscript: header,
         build: {
-            fileName: `${header.name}-v${header.version}.user.js`,
+            fileName: `${header["owowed:filename"]}.user.js`,
             autoGrant: false,
-            externalGlobals: ""
         }
     }));
 }
