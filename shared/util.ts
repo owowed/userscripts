@@ -1,12 +1,12 @@
 
-export function requireNonNull<T>(obj: T | null): T {
-    if (obj != null) {
-        return obj;
+export function requireNonNull<T>(obj: T | null): Exclude<T, undefined | null> {
+    if (obj != null && obj != undefined) {
+        return obj as Exclude<T, undefined | null>;
     }
     throw TypeError(`unexpected null`);
 }
 
-export function createElementFromHTML<E extends Element>(text: string): E {
+export function fromHTML<E extends Element>(text: string): E {
     const elem = document.createElement("div");
     elem.innerHTML = text;
     setTimeout(() => elem.remove());
