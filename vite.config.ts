@@ -4,6 +4,7 @@ import Yaml from "yaml";
 import fs from "fs";
 import { glob } from "glob";
 import { PluginOption } from "vite";
+import { formatString } from "./shared/format";
 
 const distFolder = "./dist";
 const configFolder = "./config";
@@ -24,7 +25,7 @@ for (const userjs of userscriptFolders) {
 
     for (const [key, value] of Object.entries(header) as [string, string][]) {
         if (typeof value != "string") continue;
-        header[key] = value.replace(/\${{ ([^ ]+) }}/g, (_, varKey) => header[varKey].toString());
+        header[key] = formatString(value, header);
     }
 
     monkeyPlugins.push(monkey({
@@ -33,13 +34,21 @@ for (const userjs of userscriptFolders) {
         build: {
             fileName: `${header["owowed:filename"]}.user.js`,
             autoGrant: false,
-        }
+            externalGlobals: {
+                "@owowed/oxi": "oxi"
+            }
+        },
     }));
 }
 
 export default defineConfig({
+    resolve: {
+        alias: {
+            "@shared/": "./shared/"
+        }
+    },
     build: {
-        outDir: distFolder
+        outDir: distFolder,
     },
     plugins: [
         ...monkeyPlugins
