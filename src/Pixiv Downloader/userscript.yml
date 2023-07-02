@@ -8,4 +8,7 @@ match:
 require:
   - https://github.com/owowed/oxi/raw/dist/oxi.umd.js
 grant:
+  - GM_addStyle
+  - GM_getValue
+  - GM_setValue
   - GM_download
