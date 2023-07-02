@@ -1,14 +1,13 @@
 
 owowed:id: pixiv-downloader
 name: Pixiv Bulk Downloader
-description: This script will bulk download multiple Pixiv artworks from the artist or artwork page in parrarel.
+description: This script will bulk download single or multiple Pixiv artworks from an artist or illustration.
 version: 1.0.0
 match:
   - "*://www.pixiv.net/*"
 require:
   - https://github.com/owowed/oxi/raw/dist/oxi.umd.js
 grant:
-  - GM_addStyle
   - GM_getValue
   - GM_setValue
   - GM_download
