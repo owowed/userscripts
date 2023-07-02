@@ -1,7 +1,5 @@
 {
     "compilerOptions": {
-        "baseUrl": "./src",
-        "rootDir": "./src",
         "outDir": "./dist",
         "declarationDir": "./dist",
         "declaration": true,
@@ -12,6 +10,11 @@
         "strict": true,
         "skipLibCheck": true,
         "moduleResolution": "node",
+        "paths": {
+            "@shared/*": ["./shared/*"]
+        },
+        "allowImportingTsExtensions": true,
+        "emitDeclarationOnly": true
     },
     "exclude": [
         "./dist",
