@@ -1,4 +1,6 @@
 
+import "./style.css";
+
 import { waitForElement } from "@owowed/oxi";
 import { requireNonNull } from "@shared/util.ts";
 import { createPbdDownloadManager, updatePbdDownloadManager } from "./illust";
