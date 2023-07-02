@@ -1,8 +1,9 @@
 # Contributing Guidelines & Documentation
 
-## Branch
+## Branch & Rules
 
 - `master` - the main branch for the repository.
+    - Do not make any commit to `./dist` folder. `dist` files are contained within `package` or `dist` branch.
 - `package` - contains the lastest commits from `master` and `dist` files.
     - Auto-generated. Do not make commit or change into this branch.
 - `dist` - contains the latest release `dist` files on the top level.

@@ -35,23 +35,19 @@ export class PageEvent {
             this.artworks.dispatchEvent(new Event("navigate-begin"));
             this.artworks.dispatchEvent(new Event("navigate"));
             
-            const illustFigCaption = await waitForElement("div:has(> figure):has(> figcaption)").then(requireNonNull);
+            const illustDesc = await waitForElement("div:has(> figure):has(> figcaption)").then(requireNonNull);
 
-            const observer = makeMutationObserver({ target: illustFigCaption, childList: true, once: true }, () => {
+            const observer = makeMutationObserver({ target: illustDesc, childList: true }, () => {
                 this.artworks.dispatchEvent(new Event("navigate"));
             });
 
             this.root.addEventListener("navigate", () => {
+                this.artworks.dispatchEvent(new Event("navigate-end"));
+                this.#pageState.splice(this.#pageState.indexOf("artworks"), 1);
                 observer.disconnect();
             }, { once: true });
 
             this.#pageState.push("artworks");
-        }
-        else {
-            if (this.#pageState.includes("artworks")) {
-                this.artworks.dispatchEvent(new Event("navigate-end"));
-                this.#pageState.splice(this.#pageState.indexOf("artworks"), 1);
-            }
         }
     }
 }

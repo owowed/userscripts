@@ -1,0 +1,12 @@
+{
+    "$schema": "https://json.schemastore.org/nodemon",
+    "verbose": true,
+    "ext": ".js,.ts,.css,.yml,.yaml",
+    "watch": [
+        "./src/**/*",
+        "./shared/**/*",
+        "./vite.config.ts",
+        "./vite-env.d.ts"
+    ],
+    "exec": "npx vite build"
+}
