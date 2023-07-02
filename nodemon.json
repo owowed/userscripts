@@ -5,6 +5,7 @@
     "watch": [
         "./src/**/*",
         "./shared/**/*",
+        "./config/**/*",
         "./vite.config.ts",
         "./vite-env.d.ts"
     ],
