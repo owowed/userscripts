@@ -29,7 +29,7 @@ for (const userjs of userscriptFolders) {
     }
 
     monkeyPlugins.push(monkey({
-        entry: `${userjs}/index.ts`,
+        entry: `${userjs}/main.ts`,
         userscript: header,
         build: {
             fileName: `${header["owowed:filename"]}.user.js`,
