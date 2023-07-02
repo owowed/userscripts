@@ -24,3 +24,4 @@ lerna-debug.log*
 # dist files
 dist/**/*
 !dist/**/*.md
+!dist/**/*.user.js
