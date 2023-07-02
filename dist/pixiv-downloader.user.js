@@ -139,26 +139,15 @@
             </div>
         </div>
     `);
-    updatePbdDownloadManager(pbdDownloadManager2);
-    return pbdDownloadManager2;
-  }
-  async function updatePbdDownloadManager(pbdDownloadManager2) {
-    const pbdSelect = pbdDownloadManager2.querySelector("select");
     const pbdDownload = pbdDownloadManager2.querySelector("#pbd-download");
     const pbdBulkDownload = pbdDownloadManager2.querySelector("#pbd-bulk-download");
+    const pbdSelect = pbdDownloadManager2.querySelector("select");
     const pbdFilename = pbdDownloadManager2.querySelector("#pbd-filename");
     const illustId = getIllustId();
     const illustPages = await fetchIllustPages(illustId);
-    pbdSelect.innerHTML = "";
-    pbdFilename.value = _GM_getValue("illust_filename") ?? DEFAULT_FILENAME_FORMAT;
     pbdFilename.addEventListener("change", () => {
       _GM_setValue("illust_filename", pbdFilename.value);
     });
-    for (const page of illustPages) {
-      const partName = getIllustPagePartName(page.urls.original);
-      const elem = fromHTML(`<option value="${page.urls.original}">${partName}</option>`);
-      pbdSelect.append(elem);
-    }
     const template = {
       headers: {
         Referer: "https://www.pixiv.net/"
@@ -180,6 +169,21 @@
         });
       }
     });
+    updatePbdDownloadManager(pbdDownloadManager2);
+    return pbdDownloadManager2;
+  }
+  async function updatePbdDownloadManager(pbdDownloadManager2) {
+    const pbdSelect = pbdDownloadManager2.querySelector("select");
+    const pbdFilename = pbdDownloadManager2.querySelector("#pbd-filename");
+    const illustId = getIllustId();
+    const illustPages = await fetchIllustPages(illustId);
+    pbdSelect.innerHTML = "";
+    pbdFilename.value = _GM_getValue("illust_filename") ?? DEFAULT_FILENAME_FORMAT;
+    for (const page of illustPages) {
+      const partName = getIllustPagePartName(page.urls.original);
+      const elem = fromHTML(`<option value="${page.urls.original}">${partName}</option>`);
+      pbdSelect.append(elem);
+    }
   }
   class PageEvent {
     constructor() {
