@@ -123,32 +123,18 @@ export async function createPbdDownloadManager() {
         </div>
     `);
     
-    updatePbdDownloadManager(pbdDownloadManager);
-
-    return pbdDownloadManager;
-}
-
-export async function updatePbdDownloadManager(pbdDownloadManager: HTMLDivElement) {
-    const pbdSelect = pbdDownloadManager.querySelector<HTMLSelectElement>("select")!;
+    
     const pbdDownload = pbdDownloadManager.querySelector<HTMLButtonElement>("#pbd-download")!;
     const pbdBulkDownload = pbdDownloadManager.querySelector<HTMLButtonElement>("#pbd-bulk-download")!;
+    const pbdSelect = pbdDownloadManager.querySelector<HTMLSelectElement>("select")!;
     const pbdFilename = pbdDownloadManager.querySelector<HTMLInputElement>("#pbd-filename")!;
 
     const illustId = getIllustId();
     const illustPages = await fetchIllustPages(illustId);
 
-    pbdSelect.innerHTML = "";
-    pbdFilename.value = GM_getValue("illust_filename") ?? DEFAULT_FILENAME_FORMAT;
-
     pbdFilename.addEventListener("change", () => {
         GM_setValue("illust_filename", pbdFilename.value);
     });
-
-    for (const page of illustPages) {
-        const partName = getIllustPagePartName(page.urls.original)!;
-        const elem = fromHTML(`<option value="${page.urls.original}">${partName}</option>`)
-        pbdSelect.append(elem);
-    }
     
     const template = {
         headers: {
@@ -173,4 +159,25 @@ export async function updatePbdDownloadManager(pbdDownloadManager: HTMLDivElemen
             });
         }
     });
+
+    updatePbdDownloadManager(pbdDownloadManager);
+
+    return pbdDownloadManager;
+}
+
+export async function updatePbdDownloadManager(pbdDownloadManager: HTMLDivElement) {
+    const pbdSelect = pbdDownloadManager.querySelector<HTMLSelectElement>("select")!;
+    const pbdFilename = pbdDownloadManager.querySelector<HTMLInputElement>("#pbd-filename")!;
+    
+    const illustId = getIllustId();
+    const illustPages = await fetchIllustPages(illustId);
+
+    pbdSelect.innerHTML = "";
+    pbdFilename.value = GM_getValue("illust_filename") ?? DEFAULT_FILENAME_FORMAT;
+
+    for (const page of illustPages) {
+        const partName = getIllustPagePartName(page.urls.original)!;
+        const elem = fromHTML(`<option value="${page.urls.original}">${partName}</option>`)
+        pbdSelect.append(elem);
+    }
 }
