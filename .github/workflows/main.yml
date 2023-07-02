@@ -79,7 +79,7 @@ jobs:
       - name: Push dist files into package branch
         run: |
           # Commit dist folder from the dist artifact
-          git add -A
+          git add -Au
           git commit -m "build: update ${{ steps.release-info.outputs.tag_name }} files (auto)" || true
 
           # Push all changes
