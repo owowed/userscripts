@@ -1,32 +1,6 @@
-# oxi
+# owowed/userscripts
 
-JavaScript package that provide common tools, utilities, helpers to help and ease the development of userscript.
-
-## How to Use
-
-The release build of the package is available in the [`dist`](https://github.com/owowed/oxi/tree/dist) branch. This branch will automatically update each time a release is published.
-
-To use this package, simply add the following lines to your userscript header:
-
-```javascript
-// ==UserScript==
-// ...
-// @require   https://github.com/owowed/oxi/raw/dist/oxi.umd.js
-// ...
-// ==/UserScript==
-```
-
-All methods are contained within `oxi` namespace, you should be able to use one of `oxi`'s method like this:
-
-```javascript
-const element = await oxi.waitForElement("div.hello-world");
-const observer = oxi.makeMutationObserver({ target: element },
-    ({ records }) => console.log("Mutation detected: ", records));
-```
-
-## Docs
-
-At the moment, documentation about these methods are available inside the source code in `src` as JSDoc comments.
+This repository contains collection of my public userscripts for various websites. [*Userscripts*](https://en.wikipedia.org/wiki/Userscript) are small JavaScript programs that can be installed in web browsers to add or modify website functionality.
 
 ## Contributing
 

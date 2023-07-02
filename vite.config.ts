@@ -1,9 +1,10 @@
 import { defineConfig } from "vite";
-import monkey, { MonkeyOption, MonkeyUserScript } from "vite-plugin-monkey";
+import monkey, { MonkeyUserScript } from "vite-plugin-monkey";
 import Yaml from "yaml";
 import fs from "fs";
 import { glob } from "glob";
 import { PluginOption } from "vite";
+import { formatString } from "./shared/format";
 
 const distFolder = "./dist";
 const configFolder = "./config";
@@ -24,23 +25,30 @@ for (const userjs of userscriptFolders) {
 
     for (const [key, value] of Object.entries(header) as [string, string][]) {
         if (typeof value != "string") continue;
-        header[key] = value.replace(/\${{ ([^ ]+) }}/g, (_, varKey) => header[varKey].toString());
+        header[key] = formatString(value, header);
     }
 
     monkeyPlugins.push(monkey({
         entry: `${userjs}/index.ts`,
         userscript: header,
         build: {
-            fileName: `${header.name}-v${header.version}.user.js`,
+            fileName: `${header["owowed:filename"]}.user.js`,
             autoGrant: false,
-            externalGlobals: ""
-        }
+            externalGlobals: {
+                "@owowed/oxi": "oxi"
+            }
+        },
     }));
 }
 
 export default defineConfig({
+    resolve: {
+        alias: {
+            "@shared/": "./shared/"
+        }
+    },
     build: {
-        outDir: distFolder
+        outDir: distFolder,
     },
     plugins: [
         ...monkeyPlugins
