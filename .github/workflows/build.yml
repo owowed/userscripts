@@ -6,6 +6,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+        # used for retrieving draft release, required by cardinalby/git-get-release-action@v1
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -21,11 +24,20 @@ jobs:
           node-version: 18
           cache: pnpm
 
+      - name: Get latest draft release information
+        id: release-info
+        uses: cardinalby/git-get-release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          latest: true
+          draft: true
+
       - name: PNPM Install & Build
         shell: bash
         run: |
           pnpm i
-          pnpm run build
+          USERSCRIPTS_CURRENT_RELEASE_TAG="${{ steps.release-info.outputs.tag_name }}" pnpm run build
 
       - name: Upload dist artifact
         uses: actions/upload-artifact@v3
