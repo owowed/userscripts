@@ -10,7 +10,7 @@ owowed:filename: ${{ owowed:id }}
 
 name: ${{ owowed:id }}
 description: https://github.com/owowed/userscripts
-version: 1.0.0
+version: ${{ owowed:current_release }}
 namespace: owowed.moe
 author: owowed <island@owowed.moe>
 homepage: https://github.com/owowed/userscripts
