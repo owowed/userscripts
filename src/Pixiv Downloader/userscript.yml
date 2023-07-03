@@ -2,7 +2,6 @@
 owowed:id: pixiv-downloader
 name: Pixiv Bulk Downloader
 description: This script will bulk download single or multiple Pixiv artworks from an artist or illustration.
-version: 1.0.0
 match:
   - "*://www.pixiv.net/*"
 require:

@@ -19,6 +19,8 @@ const headerTemplate: MonkeyUserScript = Yaml.parse(fs.readFileSync(`${configFol
 
 for (const userjs of userscriptFolders) {
     const header: MonkeyUserScript = {
+        "owowed:current_release":
+            process.env.USERSCRIPTS_CURRENT_RELEASE_TAG?.slice(1) ?? "0.1.0",
         ...headerTemplate,
         ...Yaml.parse(fs.readFileSync(`${userjs}/userscript.yml`).toString())
     };
