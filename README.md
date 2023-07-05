@@ -1,6 +1,8 @@
 # owowed/userscripts
 
-This repository contains collection of my public userscripts for various websites. [*Userscripts*](https://en.wikipedia.org/wiki/Userscript) are small JavaScript programs that can be installed in web browsers to add or modify website functionality.
+This repository contains collection of my public userscripts for various websites.
+
+[*Userscripts*](https://en.wikipedia.org/wiki/Userscript) are small JavaScript programs that can be installed in web browsers to add or modify website functionality.
 
 ## Contributing
 
