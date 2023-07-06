@@ -6,8 +6,8 @@
         "./src/**/*",
         "./shared/**/*",
         "./config/**/*",
-        "./vite.config.ts",
+        "./vite-build.ts",
         "./vite-env.d.ts"
     ],
-    "exec": "npx vite build"
+    "exec": "npx tsx vite-build.ts"
 }

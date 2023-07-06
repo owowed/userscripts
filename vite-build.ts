@@ -1,24 +1,24 @@
-import { defineConfig } from "vite";
+import { build } from "vite";
 import monkey, { MonkeyUserScript } from "vite-plugin-monkey";
 import Yaml from "yaml";
-import fs from "fs";
+import fs from "fs-extra";
 import { glob } from "glob";
-import { PluginOption } from "vite";
+import { PluginOption, InlineConfig } from "vite";
 import { formatString } from "./shared/format";
 
 const distFolder = "./dist";
 const configFolder = "./config";
 const srcFolder = "./src";
 
-//
+// setup userscript headers
 
 const userscriptFolders = await glob(`${srcFolder}/*`, { posix: true });
-const monkeyPlugins: PluginOption[] = [];
+const monkeyPlugins: { header: Record<string, string>, plugin: PluginOption }[] = [];
 
 const headerTemplate: MonkeyUserScript = Yaml.parse(fs.readFileSync(`${configFolder}/userscript-template.yml`).toString());
 
 for (const userjs of userscriptFolders) {
-    const header: MonkeyUserScript = {
+    const header: MonkeyUserScript & Record<string, string> = {
         "owowed:current_release":
             process.env.USERSCRIPTS_CURRENT_RELEASE_TAG?.slice(1) ?? "0.1.0",
         ...headerTemplate,
@@ -30,20 +30,25 @@ for (const userjs of userscriptFolders) {
         header[key] = formatString(value, header);
     }
 
-    monkeyPlugins.push(monkey({
-        entry: `${userjs}/main.ts`,
-        userscript: header,
-        build: {
-            fileName: `${header["owowed:filename"]}.user.js`,
-            autoGrant: false,
-            externalGlobals: {
-                "@owowed/oxi": "oxi"
-            }
-        },
-    }));
+    monkeyPlugins.push({
+        header,
+        plugin: monkey({
+            entry: `${userjs}/main.ts`,
+            userscript: header,
+            build: {
+                fileName: `${header["owowed:filename"]}.user.js`,
+                autoGrant: false,
+                externalGlobals: {
+                    "@owowed/oxi": "oxi"
+                }
+            },
+        })
+    });
 }
 
-export default defineConfig({
+// vite multi-userscript custom build
+
+const viteConfigTemplate: InlineConfig = {
     resolve: {
         alias: {
             "@shared/": "./shared/"
@@ -51,8 +56,14 @@ export default defineConfig({
     },
     build: {
         outDir: distFolder,
+        emptyOutDir: false
     },
-    plugins: [
-        ...monkeyPlugins
-    ]
-});
+    plugins: [ /* plugin */ ]
+};
+
+fs.emptyDirSync(distFolder);
+
+for (const { header, plugin } of monkeyPlugins) {
+    console.log(`==> build userscript: ${header["owowed:id"]}`);
+    await build({ ...viteConfigTemplate, plugins: [ plugin ] });
+}
