@@ -45,7 +45,7 @@ jobs:
           
           release_info_outputs_tag_name="${{ steps.release-info.outputs.tag_name }}"
           github_event_inputs_tag_name="${{ inputs.tag_name }}"
-          USERSCRIPTS_CURRENT_RELEASE_TAG="${github_event_inputs_tag_name:-$release_info_outputs_tag_name}"
+          USERSCRIPTS_CURRENT_RELEASE_TAG="${release_info_outputs_tag_name:-$github_event_inputs_tag_name}"
 
           pnpm run build
 
