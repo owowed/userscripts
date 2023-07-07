@@ -2,7 +2,7 @@
 import { GM_download, GM_getValue, GM_setValue } from "$";
 import { waitForElement } from "@owowed/oxi";
 import { formatString } from "@shared/format.ts";
-import { fromHTML, requireNonNull } from "@shared/util.ts";
+import { html, requireNonNull } from "@shared/util.ts";
 import { Illust, IllustPage, UserIllust } from "./illust-types";
 
 export type * from "./illust-types";
@@ -111,7 +111,7 @@ export function getIllustFigCaption(): any {
 }
 
 export async function createPbdDownloadManager() {
-    const pbdDownloadManager = fromHTML<HTMLDivElement>(`
+    const pbdDownloadManager = html<HTMLDivElement>`
         <div id="pbd-download-manager">
             <input id="pbd-filename" type="text" placeholder="Artwork filename..."/>
             <div>
@@ -121,7 +121,7 @@ export async function createPbdDownloadManager() {
                 <button id="pbd-bulk-download">Bulk Download</button>
             </div>
         </div>
-    `);
+    `;
     
     
     const pbdDownload = pbdDownloadManager.querySelector<HTMLButtonElement>("#pbd-download")!;
@@ -177,7 +177,7 @@ export async function updatePbdDownloadManager(pbdDownloadManager: HTMLDivElemen
 
     for (const page of illustPages) {
         const partName = getIllustPagePartName(page.urls.original)!;
-        const elem = fromHTML(`<option value="${page.urls.original}">${partName}</option>`)
+        const elem = html<HTMLOptionElement>`<option value="${page.urls.original}">${partName}</option>`;
         pbdSelect.append(elem);
     }
 }
