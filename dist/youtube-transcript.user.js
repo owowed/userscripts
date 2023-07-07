@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube Raw Transcript
 // @namespace    owowed.moe
-// @version      0.1.3
+// @version      0.1.0
 // @author       owowed <island@owowed.moe>
 // @description  This script will generate a raw transcript from the video's subtitle, where you can extract its content.
 // @license      LGPL-3.0

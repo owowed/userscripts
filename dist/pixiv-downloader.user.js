@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pixiv Bulk Downloader
 // @namespace    owowed.moe
-// @version      0.1.3
+// @version      0.1.0
 // @author       owowed <island@owowed.moe>
 // @description  This script will bulk download single or multiple Pixiv artworks from an artist or illustration.
 // @license      LGPL-3.0
