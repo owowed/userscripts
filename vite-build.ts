@@ -52,7 +52,8 @@ const viteConfigTemplate: InlineConfig = {
     resolve: {
         alias: {
             "@shared/": "./shared/"
-        }
+        },
+        extensions: [ ".js", ".ts" ]
     },
     build: {
         outDir: distFolder,
