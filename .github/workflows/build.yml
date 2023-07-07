@@ -31,7 +31,7 @@ jobs:
       - name: Get latest draft release information
         id: release-info
         uses: cardinalby/git-get-release-action@v1
-        if: github.event.inputs.tag_name == ''
+        if: inputs.tag_name == ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
