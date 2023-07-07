@@ -1,0 +1,25 @@
+#ytrt-generate-btn {
+    background-color: var(--yt-spec-badge-chip-background);
+    padding: 6px 10px;
+    border: none;
+    border-radius: 3px;
+    color: var(--yt-spec-text-primary);
+    font-family: "Roboto","Arial",sans-serif;
+    cursor: pointer;
+}
+
+#ytrt-generate-btn:hover {
+    backdrop-filter: brightness(1.4);
+}
+
+#ytrt-generate-btn:active {
+    backdrop-filter: brightness(1.8);
+}
+
+#ytrt-textarea {
+    width: 360px;
+}
+
+ytd-transcript-search-panel-renderer > #header {
+    padding: 0 0 12px 12px;
+}

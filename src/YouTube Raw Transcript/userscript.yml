@@ -1,0 +1,10 @@
+
+owowed:id: youtube-transcript
+name: YouTube Raw Transcript
+description: This script will generate a raw transcript from the video's subtitle, where you can extract its content.
+match:
+  - "*://www.youtube.com/*"
+require:
+  - https://github.com/owowed/oxi/raw/dist/oxi.umd.js
+grant:
+  - GM_download
