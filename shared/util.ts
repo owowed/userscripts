@@ -19,3 +19,31 @@ export function isDOMConnected(node?: Node) {
     }
     return false;
 }
+
+export const HTMLEntityMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;',
+    '`': '&#x60;',
+    '=': '&#x3D;'
+} as const;
+
+export function escapeHTML(text: string) {
+    // @ts-ignore
+    return text.replace(/[&<>"'`=\/]/g, (s: string) => HTMLEntityMap[s]);
+}
+  
+
+export function html<E extends Element>(template: readonly string[], ...subst: any[]) {
+    const completeString = [];
+
+    for (let i = 0; i < template.length; i++) {
+        completeString.push(template[i]);
+        if (subst[i]) completeString.push(escapeHTML(String(subst[i])));
+    }
+
+    return fromHTML<E>(completeString.join(""));
+}
