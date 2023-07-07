@@ -40,12 +40,7 @@
       throw TypeError("Cannot add the same private member more than once");
     member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
   };
-  var __privateSet = (obj, member, value, setter) => {
-    __accessCheck(obj, member, "write to private field");
-    setter ? setter.call(obj, value) : member.set(obj, value);
-    return value;
-  };
-  var _firstTime, _pageState;
+  var _pageEvent;
   function requireNonNull(obj) {
     if (obj != null && obj != void 0) {
       return obj;
@@ -57,6 +52,28 @@
     elem.innerHTML = text;
     setTimeout(() => elem.remove());
     return elem.children[0];
+  }
+  const HTMLEntityMap = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+    "/": "&#x2F;",
+    "`": "&#x60;",
+    "=": "&#x3D;"
+  };
+  function escapeHTML(text) {
+    return text.replace(/[&<>"'`=\/]/g, (s) => HTMLEntityMap[s]);
+  }
+  function html(template, ...subst) {
+    const completeString = [];
+    for (let i = 0; i < template.length; i++) {
+      completeString.push(template[i]);
+      if (subst[i])
+        completeString.push(escapeHTML(String(subst[i])));
+    }
+    return fromHTML(completeString.join(""));
   }
   var _GM_download = /* @__PURE__ */ (() => typeof GM_download != "undefined" ? GM_download : void 0)();
   var _GM_getValue = /* @__PURE__ */ (() => typeof GM_getValue != "undefined" ? GM_getValue : void 0)();
@@ -127,7 +144,7 @@
     return window.location.href.match(/\/artworks\/(\d+)/)[1];
   }
   async function createPbdDownloadManager() {
-    const pbdDownloadManager2 = fromHTML(`
+    const pbdDownloadManager2 = html`
         <div id="pbd-download-manager">
             <input id="pbd-filename" type="text" placeholder="Artwork filename..."/>
             <div>
@@ -137,7 +154,7 @@
                 <button id="pbd-bulk-download">Bulk Download</button>
             </div>
         </div>
-    `);
+    `;
     const pbdDownload = pbdDownloadManager2.querySelector("#pbd-download");
     const pbdBulkDownload = pbdDownloadManager2.querySelector("#pbd-bulk-download");
     const pbdSelect = pbdDownloadManager2.querySelector("select");
@@ -180,58 +197,67 @@
     pbdFilename.value = _GM_getValue("illust_filename") ?? DEFAULT_FILENAME_FORMAT;
     for (const page of illustPages) {
       const partName = getIllustPagePartName(page.urls.original);
-      const elem = fromHTML(`<option value="${page.urls.original}">${partName}</option>`);
+      const elem = html`<option value="${page.urls.original}">${partName}</option>`;
       pbdSelect.append(elem);
     }
   }
-  class PageEvent {
+  class PageEvent extends EventTarget {
     constructor() {
-      __publicField(this, "root", new EventTarget());
-      __publicField(this, "artworks", new EventTarget());
-      __privateAdd(this, _firstTime, true);
-      __privateAdd(this, _pageState, []);
+      super();
+      __publicField(this, "active", false);
       this.initAsync();
     }
     async initAsync() {
       const charcoal = await oxi.waitForElement(".charcoal-token > div", { maxTries: Infinity }).then(requireNonNull);
-      await this.dispatchEvents();
+      if (!this.active) {
+        this.dispatchEvent(new Event("navigate-begin"));
+        this.dispatchEvent(new Event("navigate"));
+        this.active = true;
+      }
       oxi.makeMutationObserver({ target: charcoal, childList: true }, async () => {
-        await this.dispatchEvents();
+        if (!this.active) {
+          this.dispatchEvent(new Event("navigate-begin"));
+          this.active = true;
+        }
+        this.dispatchEvent(new Event("navigate"));
       });
     }
-    async dispatchEvents() {
-      this.root.dispatchEvent(new Event("navigate"));
-      if (__privateGet(this, _firstTime)) {
-        this.root.dispatchEvent(new Event("navigate-begin"));
-        __privateGet(this, _pageState).push("root");
-        __privateSet(this, _firstTime, false);
-      }
-      if (window.location.href.includes("/artworks/")) {
-        this.artworks.dispatchEvent(new Event("navigate-begin"));
-        this.artworks.dispatchEvent(new Event("navigate"));
+  }
+  class ArtworksEvent extends EventTarget {
+    constructor() {
+      super();
+      __privateAdd(this, _pageEvent, new PageEvent());
+      __publicField(this, "active", false);
+      this.initAsync();
+    }
+    async initAsync() {
+      __privateGet(this, _pageEvent).addEventListener("navigate", async () => {
+        if (!window.location.pathname.includes("/artworks/"))
+          return;
+        this.dispatchEvent(new Event("navigate-begin"));
+        this.dispatchEvent(new Event("navigate"));
         const illustDesc = await oxi.waitForElement("div:has(> figure):has(> figcaption)").then(requireNonNull);
         const observer = oxi.makeMutationObserver({ target: illustDesc, childList: true }, () => {
-          this.artworks.dispatchEvent(new Event("navigate"));
+          this.dispatchEvent(new Event("navigate"));
         });
-        this.root.addEventListener("navigate", () => {
-          this.artworks.dispatchEvent(new Event("navigate-end"));
-          __privateGet(this, _pageState).splice(__privateGet(this, _pageState).indexOf("artworks"), 1);
+        __privateGet(this, _pageEvent).addEventListener("navigate", () => {
+          this.dispatchEvent(new Event("navigate-end"));
+          this.active = false;
           observer.disconnect();
         }, { once: true });
-        __privateGet(this, _pageState).push("artworks");
-      }
+        this.active = true;
+      });
     }
   }
-  _firstTime = new WeakMap();
-  _pageState = new WeakMap();
-  const pageEvent = new PageEvent();
+  _pageEvent = new WeakMap();
+  const artworksEvent = new ArtworksEvent();
   let pbdDownloadManager;
-  pageEvent.artworks.addEventListener("navigate-begin", async () => {
+  artworksEvent.addEventListener("navigate-begin", async () => {
     pbdDownloadManager ?? (pbdDownloadManager = await createPbdDownloadManager());
     const illustDesc = await oxi.waitForElement("figcaption:has(h1):has(footer) div:has(> footer)").then(requireNonNull);
     illustDesc.append(pbdDownloadManager);
   });
-  pageEvent.artworks.addEventListener("navigate", () => {
+  artworksEvent.addEventListener("navigate", () => {
     updatePbdDownloadManager(pbdDownloadManager);
   });
 
