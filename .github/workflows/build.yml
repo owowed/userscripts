@@ -1,7 +1,11 @@
 name: Build Package
 
 on:
-  workflow_call: {}
+  workflow_call:
+    inputs:
+      tag_name:
+        type: string
+        required: false
 
 jobs:
   build:
@@ -27,6 +31,7 @@ jobs:
       - name: Get latest draft release information
         id: release-info
         uses: cardinalby/git-get-release-action@v1
+        if: github.event.inputs.tag_name == ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -37,7 +42,12 @@ jobs:
         shell: bash
         run: |
           pnpm i
-          USERSCRIPTS_CURRENT_RELEASE_TAG="${{ steps.release-info.outputs.tag_name }}" pnpm run build
+          
+          release_info_outputs_tag_name="${{ steps.release-info.outputs.tag_name }}"
+          github_event_inputs_tag_name="${{ github.event.inputs.tag_name }}"
+          USERSCRIPTS_CURRENT_RELEASE_TAG="${github_event_inputs_tag_name:-$release_info_outputs_tag_name}"
+
+          pnpm run build
 
       - name: Upload dist artifact
         uses: actions/upload-artifact@v3
