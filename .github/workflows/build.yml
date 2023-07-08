@@ -5,14 +5,11 @@ on:
     inputs:
       tag_name:
         type: string
-        required: false
+        required: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-        # used for retrieving draft release, required by cardinalby/git-get-release-action@v1
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -28,28 +25,17 @@ jobs:
           node-version: 18
           cache: pnpm
 
-      - name: Get latest draft release information
-        id: release-info
-        uses: cardinalby/git-get-release-action@v1
-        if: inputs.tag_name == ''
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          latest: true
-          draft: true
-
       - name: PNPM Install & Build
         shell: bash
         run: |
           pnpm i
           
-          release_info_outputs_tag_name="${{ steps.release-info.outputs.tag_name }}"
           github_event_inputs_tag_name="${{ inputs.tag_name }}"
           
-          USERSCRIPTS_CURRENT_RELEASE_TAG="${release_info_outputs_tag_name:-$github_event_inputs_tag_name}" pnpm run build
+          USERSCRIPTS_CURRENT_RELEASE_TAG="$github_event_inputs_tag_name" pnpm run build
 
       - name: Upload dist artifact
         uses: actions/upload-artifact@v3
         with:
-          name: build-dist
+          name: userscripts-${{ inputs.tag_name }}-dist
           path: dist
