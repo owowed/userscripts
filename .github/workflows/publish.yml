@@ -6,15 +6,15 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  build:
+  update-package:
+    uses: ./.github/workflows/update-package.yml
     permissions:
       contents: write
-    uses: ./.github/workflows/build.yml
     with:
       tag_name: ${{ github.ref_name }}
 
   push-dist:
-    needs: build
+    needs: update-package
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -25,7 +25,7 @@ jobs:
       - name: Download dist files
         uses: actions/download-artifact@v3
         with:
-          name: build-dist
+          name: userscripts-${{ github.ref_name }}-dist
           path: ./dist
 
       - name: Setup Git
@@ -44,7 +44,7 @@ jobs:
           git push -f origin dist
 
   upload-release-files:
-    needs: build
+    needs: update-package
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -52,13 +52,13 @@ jobs:
       - name: Download dist files
         uses: actions/download-artifact@v3
         with:
-          name: build-dist
+          name: userscripts-${{ github.ref_name }}-dist
           path: ./dist
       
       - name: Create zip archive of dist files
         id: archives
         run: |
-          zip_archive="build-dist-$GITHUB_REF_NAME.zip"
+          zip_archive="userscripts-${{ github.ref_name }}-dist.zip"
 
           zip -r9 "$zip_archive" dist/*
 
