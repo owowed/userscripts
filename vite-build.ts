@@ -64,7 +64,17 @@ const viteConfigTemplate: InlineConfig = {
 
 fs.emptyDirSync(distFolder);
 
-for (const { header, plugin } of monkeyPlugins) {
+const targetUserscriptBuild = process.env.USERSCRITPS_BUILD;
+
+if (targetUserscriptBuild) {
+    const { header, plugin } = monkeyPlugins.find(({ header }) => header["owowed:id"] == targetUserscriptBuild)!;
+    
     console.log(`==> build userscript: ${header["owowed:id"]}`);
     await build({ ...viteConfigTemplate, plugins: [ plugin ] });
+}
+else {
+    for (const { header, plugin } of monkeyPlugins) {
+        console.log(`==> build userscript: ${header["owowed:id"]}`);
+        await build({ ...viteConfigTemplate, plugins: [ plugin ] });
+    }
 }
