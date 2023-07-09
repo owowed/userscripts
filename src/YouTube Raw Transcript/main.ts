@@ -10,3 +10,7 @@ const rawTranscript = new RawTranscript;
 watchPageEvent.addEventListener("navigate-begin", () => {
     rawTranscript.regenerate();
 });
+
+watchPageEvent.addEventListener("navigate", () => {
+    rawTranscript.update();
+});

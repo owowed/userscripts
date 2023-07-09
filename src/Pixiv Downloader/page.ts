@@ -1,5 +1,4 @@
 import { makeMutationObserver, waitForElement } from "@owowed/oxi";
-import { requireNonNull } from "@shared/util.ts";
 
 export class PageEvent extends EventTarget {
     active = false;
@@ -10,7 +9,7 @@ export class PageEvent extends EventTarget {
     }
 
     async initAsync() {
-        const charcoal = await waitForElement(".charcoal-token > div", { maxTries: Infinity }).then(requireNonNull);
+        const charcoal = await waitForElement(".charcoal-token > div");
 
         if (!this.active) {
             this.dispatchEvent(new Event("navigate-begin"));
@@ -45,7 +44,7 @@ export class ArtworksEvent extends EventTarget {
             this.dispatchEvent(new Event("navigate-begin"));
             this.dispatchEvent(new Event("navigate"));
     
-            const illustDesc = await waitForElement("div:has(> figure):has(> figcaption)").then(requireNonNull);
+            const illustDesc = await waitForElement("div:has(> figure):has(> figcaption)");
     
             const observer = makeMutationObserver({ target: illustDesc, childList: true }, () => {
                 this.dispatchEvent(new Event("navigate"));
