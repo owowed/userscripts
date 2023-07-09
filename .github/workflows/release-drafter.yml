@@ -1,9 +1,11 @@
-name: Main Action
+name: Release Drafter
 
 on:
   push:
     branches:
       - master
+  pull_request:
+    types: [opened, reopened, synchronize]
   workflow_dispatch: {}
 
 jobs:
@@ -11,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: read
+      pull-requests: write
     outputs:
       tag_name: ${{ steps.release-draft.outputs.tag_name }}
     steps:
