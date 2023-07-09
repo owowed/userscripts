@@ -4,7 +4,7 @@ import Yaml from "yaml";
 import fs from "fs-extra";
 import { glob } from "glob";
 import { PluginOption, InlineConfig } from "vite";
-import { formatString } from "./shared/format";
+import { formatString } from "@owowed/oxi";
 
 const distFolder = "./dist";
 const configFolder = "./config";

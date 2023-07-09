@@ -1,8 +1,8 @@
 
 import { GM_download, GM_getValue, GM_setValue } from "$";
 import { waitForElement } from "@owowed/oxi";
-import { formatString } from "@shared/format.ts";
-import { html, requireNonNull } from "@shared/util.ts";
+import { formatString, html } from "@owowed/oxi";
+import { requireNonNull } from "@shared/util.ts";
 import { Illust, IllustPage, UserIllust } from "./illust-types";
 
 export type * from "./illust-types";
