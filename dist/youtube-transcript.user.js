@@ -14,7 +14,7 @@
 // @grant        GM_download
 // ==/UserScript==
 
-(t=>{const e=document.createElement("style");e.dataset.source="vite-plugin-monkey",e.textContent=t,document.head.append(e)})(" #ytrt-generate-btn{background-color:var(--yt-spec-badge-chip-background);padding:6px 10px;border:none;border-radius:3px;color:var(--yt-spec-text-primary);font-family:Roboto,Arial,sans-serif;cursor:pointer}#ytrt-generate-btn:hover{-webkit-backdrop-filter:brightness(1.4);backdrop-filter:brightness(1.4)}#ytrt-generate-btn:active{-webkit-backdrop-filter:brightness(1.8);backdrop-filter:brightness(1.8)}#ytrt-textarea{width:360px}ytd-transcript-search-panel-renderer>#header{padding:0 0 12px 12px} ");
+(t=>{const e=document.createElement("style");e.dataset.source="vite-plugin-monkey",e.textContent=t,document.head.append(e)})(' #ytrt-generate-btn{background-color:var(--yt-spec-badge-chip-background);padding:6px 10px;border:none;border-radius:3px;color:var(--yt-spec-text-primary);font-family:Roboto,Arial,sans-serif;cursor:pointer}#ytrt-generate-btn:hover{-webkit-backdrop-filter:brightness(1.4);backdrop-filter:brightness(1.4)}#ytrt-generate-btn:active{-webkit-backdrop-filter:brightness(1.8);backdrop-filter:brightness(1.8)}#ytrt-textarea{width:360px}ytd-transcript-search-panel-renderer>#header{padding:0 0 12px 12px}#panels:has(> ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-searchable-transcript"][visibility="ENGAGEMENT_PANEL_VISIBILITY_HIDDEN"])+#ytrt-textarea,#panels:has(> ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-searchable-transcript"] #spinner)+#ytrt-textarea{display:none} ');
 
 (function (oxi) {
   'use strict';
@@ -60,40 +60,6 @@
       });
     }
   }
-  function requireNonNull(obj) {
-    if (obj != null && obj != void 0) {
-      return obj;
-    }
-    throw TypeError(`unexpected null`);
-  }
-  function fromHTML(text) {
-    const elem = document.createElement("div");
-    elem.innerHTML = text;
-    setTimeout(() => elem.remove());
-    return elem.children[0];
-  }
-  const HTMLEntityMap = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;",
-    "/": "&#x2F;",
-    "`": "&#x60;",
-    "=": "&#x3D;"
-  };
-  function escapeHTML(text) {
-    return text.replace(/[&<>"'`=\/]/g, (s) => HTMLEntityMap[s]);
-  }
-  function html(template, ...subst) {
-    const completeString = [];
-    for (let i = 0; i < template.length; i++) {
-      completeString.push(template[i]);
-      if (subst[i])
-        completeString.push(escapeHTML(String(subst[i])));
-    }
-    return fromHTML(completeString.join(""));
-  }
   class RawTranscript {
     constructor() {
       __privateAdd(this, _clearAbortControllerQueue);
@@ -104,8 +70,8 @@
       __publicField(this, "transcriptRenderer");
       __publicField(this, "activeButton");
       __publicField(this, "textBox");
-      this.activeButton = html`<button id="ytrt-generate-btn">Raw Transcript</button>`;
-      this.textBox = html`<textarea id="ytrt-textarea" rows=20 placeholder="(raw transcript here)"/>`;
+      this.activeButton = oxi.html`<button id="ytrt-generate-btn">Raw Transcript</button>`;
+      this.textBox = oxi.html`<textarea id="ytrt-textarea" rows=20 placeholder="(raw transcript here)"/>`;
       this.activeButton.addEventListener("click", async () => {
         const transcriptSegmentTexts = this.transcriptRenderer.querySelectorAll("ytd-transcript-segment-renderer .segment-text");
         for (const text of transcriptSegmentTexts) {
@@ -120,14 +86,14 @@
       this.transcriptRenderer = void 0;
       const abortController = new AbortController();
       __privateGet(this, _abortControllerQueue).push(abortController);
-      oxi.makeMutationObserver(
+      oxi.observeMutation(
         {
           target: this.transcriptPanel,
           abortSignal: abortController.signal,
           attributes: true,
           attributeFilter: ["visibility", "target-id"]
         },
-        async ({ records, observer }) => {
+        async ({ records }) => {
           var _a, _b;
           for (const record of records) {
             if (record.type != "attributes")
@@ -147,6 +113,7 @@
       );
     }
     async update() {
+      this.textBox.value = "";
     }
   }
   _abortControllerQueue = new WeakMap();
@@ -159,18 +126,21 @@
   waitForElement_fn = function(selector) {
     const abortController = new AbortController();
     __privateGet(this, _abortControllerQueue).push(abortController);
-    return oxi.waitForElement(selector, { maxTries: Infinity, abortSignal: abortController.signal }).then(requireNonNull);
+    return oxi.waitForElement(selector, { maxTries: Infinity, abortSignal: abortController.signal });
   };
   _waitForElementByParent = new WeakSet();
   waitForElementByParent_fn = function(parent, selector) {
     const abortController = new AbortController();
     __privateGet(this, _abortControllerQueue).push(abortController);
-    return oxi.waitForElement(selector, { parent, maxTries: Infinity, abortSignal: abortController.signal }).then(requireNonNull);
+    return oxi.waitForElement(selector, { parent, maxTries: Infinity, abortSignal: abortController.signal });
   };
   const watchPageEvent = new WatchPageEvent();
   const rawTranscript = new RawTranscript();
   watchPageEvent.addEventListener("navigate-begin", () => {
     rawTranscript.regenerate();
+  });
+  watchPageEvent.addEventListener("navigate", () => {
+    rawTranscript.update();
   });
 
 })(oxi);

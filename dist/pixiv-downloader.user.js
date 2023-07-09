@@ -41,64 +41,26 @@
     member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
   };
   var _pageEvent;
+  var _GM_download = /* @__PURE__ */ (() => typeof GM_download != "undefined" ? GM_download : void 0)();
+  var _GM_getValue = /* @__PURE__ */ (() => typeof GM_getValue != "undefined" ? GM_getValue : void 0)();
+  var _GM_setValue = /* @__PURE__ */ (() => typeof GM_setValue != "undefined" ? GM_setValue : void 0)();
   function requireNonNull(obj) {
     if (obj != null && obj != void 0) {
       return obj;
     }
     throw TypeError(`unexpected null`);
   }
-  function fromHTML(text) {
-    const elem = document.createElement("div");
-    elem.innerHTML = text;
-    setTimeout(() => elem.remove());
-    return elem.children[0];
-  }
-  const HTMLEntityMap = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;",
-    "/": "&#x2F;",
-    "`": "&#x60;",
-    "=": "&#x3D;"
-  };
-  function escapeHTML(text) {
-    return text.replace(/[&<>"'`=\/]/g, (s) => HTMLEntityMap[s]);
-  }
-  function html(template, ...subst) {
-    const completeString = [];
-    for (let i = 0; i < template.length; i++) {
-      completeString.push(template[i]);
-      if (subst[i])
-        completeString.push(escapeHTML(String(subst[i])));
-    }
-    return fromHTML(completeString.join(""));
-  }
-  var _GM_download = /* @__PURE__ */ (() => typeof GM_download != "undefined" ? GM_download : void 0)();
-  var _GM_getValue = /* @__PURE__ */ (() => typeof GM_getValue != "undefined" ? GM_getValue : void 0)();
-  var _GM_setValue = /* @__PURE__ */ (() => typeof GM_setValue != "undefined" ? GM_setValue : void 0)();
-  function escapeRegExp(text) {
-    return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  }
-  function formatString(text, dict, { subst = { format: "${{ | }}", var: "|" } } = {}) {
-    const substRegex = subst.format.split(subst.var).map(escapeRegExp).join(String.raw`([$\w\d-_.: ]+)`);
-    return text.replace(new RegExp(substRegex, "g"), (_, varKey) => {
-      var _a;
-      return (_a = dict[varKey]) == null ? void 0 : _a.toString();
-    });
-  }
   const ILLUST_URL = "https://www.pixiv.net/ajax/illust/${{ pixiv:illust_id }}?lang=en";
   const ILLUST_PAGES_URL = "https://www.pixiv.net/ajax/illust/${{ pixiv:illust_id }}/pages?lang=en";
   const DEFAULT_FILENAME_FORMAT = "%illust_title% [artist %illust_author%][pixiv %illust_id%].%illust_filename_ext%";
   function fetchIllust(illustId) {
-    const fetchUrl = formatString(ILLUST_URL, {
+    const fetchUrl = oxi.formatString(ILLUST_URL, {
       "pixiv:illust_id": illustId
     });
     return fetch(fetchUrl).then((i) => i.json()).then((i) => i.body);
   }
   async function fetchIllustPages(illustId) {
-    const fetchUrl = formatString(ILLUST_PAGES_URL, {
+    const fetchUrl = oxi.formatString(ILLUST_PAGES_URL, {
       "pixiv:illust_id": illustId
     });
     return fetch(fetchUrl).then((i) => i.json()).then((i) => i.body);
@@ -122,7 +84,7 @@
   async function formatIllustInfo(illustId, text, dict = {}) {
     text || (text = DEFAULT_FILENAME_FORMAT);
     const illust = await fetchIllust(illustId);
-    const result = formatString(text, {
+    const result = oxi.formatString(text, {
       illust_id: illust.id,
       illust_title: illust.title,
       illust_author: illust.userName,
@@ -144,7 +106,7 @@
     return window.location.href.match(/\/artworks\/(\d+)/)[1];
   }
   async function createPbdDownloadManager() {
-    const pbdDownloadManager2 = html`
+    const pbdDownloadManager2 = oxi.html`
         <div id="pbd-download-manager">
             <input id="pbd-filename" type="text" placeholder="Artwork filename..."/>
             <div>
@@ -197,7 +159,7 @@
     pbdFilename.value = _GM_getValue("illust_filename") ?? DEFAULT_FILENAME_FORMAT;
     for (const page of illustPages) {
       const partName = getIllustPagePartName(page.urls.original);
-      const elem = html`<option value="${page.urls.original}">${partName}</option>`;
+      const elem = oxi.html`<option value="${page.urls.original}">${partName}</option>`;
       pbdSelect.append(elem);
     }
   }
@@ -208,7 +170,7 @@
       this.initAsync();
     }
     async initAsync() {
-      const charcoal = await oxi.waitForElement(".charcoal-token > div", { maxTries: Infinity }).then(requireNonNull);
+      const charcoal = await oxi.waitForElement(".charcoal-token > div");
       if (!this.active) {
         this.dispatchEvent(new Event("navigate-begin"));
         this.dispatchEvent(new Event("navigate"));
@@ -236,7 +198,7 @@
           return;
         this.dispatchEvent(new Event("navigate-begin"));
         this.dispatchEvent(new Event("navigate"));
-        const illustDesc = await oxi.waitForElement("div:has(> figure):has(> figcaption)").then(requireNonNull);
+        const illustDesc = await oxi.waitForElement("div:has(> figure):has(> figcaption)");
         const observer = oxi.makeMutationObserver({ target: illustDesc, childList: true }, () => {
           this.dispatchEvent(new Event("navigate"));
         });
@@ -254,11 +216,13 @@
   let pbdDownloadManager;
   artworksEvent.addEventListener("navigate-begin", async () => {
     pbdDownloadManager ?? (pbdDownloadManager = await createPbdDownloadManager());
-    const illustDesc = await oxi.waitForElement("figcaption:has(h1):has(footer) div:has(> footer)").then(requireNonNull);
+    const illustDesc = await oxi.waitForElement("figcaption:has(h1):has(footer) div:has(> footer)");
     illustDesc.append(pbdDownloadManager);
   });
   artworksEvent.addEventListener("navigate", () => {
-    updatePbdDownloadManager(pbdDownloadManager);
+    if (pbdDownloadManager) {
+      updatePbdDownloadManager(pbdDownloadManager);
+    }
   });
 
 })(oxi);
