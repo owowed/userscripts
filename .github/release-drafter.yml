@@ -1,4 +1,64 @@
-name-template: v$NEXT_PATCH_VERSION
-tag-template: v$NEXT_PATCH_VERSION
+name-template: 'v$RESOLVED_VERSION 🚩'
+tag-template: 'v$RESOLVED_VERSION'
+categories:
+  - title: '✨ Features'
+    labels:
+      - 'feature'
+
+  - title: '🐛 Bug Fixes'
+    labels:
+      - 'fix'
+      - 'bugfix'
+      - 'bug'
+
+  - title: '🧰 Maintenance'
+    label:
+      - 'refactor'
+      - 'ci'
+      - 'docs'
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
+version-resolver:
+  major:
+    labels:
+      - 'major'
+  minor:
+    labels:
+      - 'minor'
+  patch:
+    labels:
+      - 'patch'
+  default: patch
 template: |
+  Here are the changes made for v$RESOLVED_VERSION:
+
   $CHANGES
+autolabeler:
+  - label: bugfix
+    title: '/fix/i'
+    branch:
+      - '/fix\/.+/'
+
+  - label: feature
+    title: '/feat(ure)?/i'
+    branch:
+      - '/feat\/.+/'
+
+  - label: refactor
+    title: '/refactor/i'
+    branch:
+      - '/refactor\/.+/'
+
+  - label: docs
+    title: '/doc(s|umentation)/i'
+    files:
+      - '*.md'
+      - '.gitignore'
+    branch:
+      - '/docs\/.+/'
+
+  - label: ci
+    files:
+      - '.github/**/*.yml'
+    branch:
+      - '/ci\/.+/'
