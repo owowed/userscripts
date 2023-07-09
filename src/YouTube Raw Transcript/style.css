@@ -23,3 +23,8 @@
 ytd-transcript-search-panel-renderer > #header {
     padding: 0 0 12px 12px;
 }
+
+#panels:has(> ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-searchable-transcript"][visibility="ENGAGEMENT_PANEL_VISIBILITY_HIDDEN"]) + #ytrt-textarea,
+#panels:has(> ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-searchable-transcript"] #spinner) + #ytrt-textarea {
+    display: none;
+}

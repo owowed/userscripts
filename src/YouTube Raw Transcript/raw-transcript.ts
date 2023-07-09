@@ -1,5 +1,4 @@
-import { makeMutationObserver, waitForElement, waitForElementByParent } from "@owowed/oxi";
-import { requireNonNull, html } from "@shared/util.ts";
+import { observeMutation, waitForElement, html } from "@owowed/oxi";
 
 export class RawTranscript {
     #abortControllerQueue: AbortController[] = [];
@@ -30,15 +29,13 @@ export class RawTranscript {
     #waitForElement(selector: string): Promise<Element> {
         const abortController = new AbortController;
         this.#abortControllerQueue.push(abortController);
-        return waitForElement(selector, { maxTries: Infinity, abortSignal: abortController.signal })
-            .then(requireNonNull);
+        return waitForElement(selector, { maxTries: Infinity, abortSignal: abortController.signal });
     }
 
     #waitForElementByParent(parent: ParentNode, selector: string): Promise<Element> {
         const abortController = new AbortController;
         this.#abortControllerQueue.push(abortController);
-        return waitForElement(selector, { parent, maxTries: Infinity, abortSignal: abortController.signal })
-            .then(requireNonNull);
+        return waitForElement(selector, { parent, maxTries: Infinity, abortSignal: abortController.signal });
     }
 
     async regenerate() {
@@ -50,12 +47,12 @@ export class RawTranscript {
 
         this.#abortControllerQueue.push(abortController);
 
-        makeMutationObserver(
+        observeMutation(
             { target: this.transcriptPanel,
                 abortSignal: abortController.signal,
                 attributes: true,
                 attributeFilter: ["visibility", "target-id"] },
-            async ({ records, observer }) =>
+            async ({ records }) =>
         {
             for (const record of records) {
                 if (record.type != "attributes") continue;
@@ -76,5 +73,7 @@ export class RawTranscript {
         });
     }
 
-    async update() {}
+    async update() {
+        this.textBox.value = "";
+    }
 }
