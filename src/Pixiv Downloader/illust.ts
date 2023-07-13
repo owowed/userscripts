@@ -129,8 +129,7 @@ export async function createPbdDownloadManager() {
     const pbdSelect = pbdDownloadManager.querySelector<HTMLSelectElement>("select")!;
     const pbdFilename = pbdDownloadManager.querySelector<HTMLInputElement>("#pbd-filename")!;
 
-    const illustId = getIllustId();
-    const illustPages = await fetchIllustPages(illustId);
+    const illustPages = await fetchIllustPages(getIllustId());
 
     pbdFilename.addEventListener("change", () => {
         GM_setValue("illust_filename", pbdFilename.value);
@@ -145,7 +144,7 @@ export async function createPbdDownloadManager() {
     pbdDownload.addEventListener("click", async () => {
         GM_download({
             ...template,
-            name: await getIllustPageFilename(illustId, pbdSelect.value).then(requireNonNull),
+            name: await getIllustPageFilename(getIllustId(), pbdSelect.value).then(requireNonNull),
             url: pbdSelect.value,
         });
     });
@@ -154,7 +153,7 @@ export async function createPbdDownloadManager() {
         for (const page of illustPages) {
             GM_download({
                 ...template,
-                name: await getIllustPageFilename(illustId, page.urls.original).then(requireNonNull),
+                name: await getIllustPageFilename(getIllustId(), page.urls.original).then(requireNonNull),
                 url: page.urls.original,
             });
         }
