@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pixiv Bulk Downloader
 // @namespace    owowed.moe
-// @version      0.1.4
+// @version
 // @author       owowed <island@owowed.moe>
 // @description  This script will bulk download single or multiple Pixiv artworks from an artist or illustration.
 // @license      LGPL-3.0
@@ -121,8 +121,7 @@
     const pbdBulkDownload = pbdDownloadManager2.querySelector("#pbd-bulk-download");
     const pbdSelect = pbdDownloadManager2.querySelector("select");
     const pbdFilename = pbdDownloadManager2.querySelector("#pbd-filename");
-    const illustId = getIllustId();
-    const illustPages = await fetchIllustPages(illustId);
+    const illustPages = await fetchIllustPages(getIllustId());
     pbdFilename.addEventListener("change", () => {
       _GM_setValue("illust_filename", pbdFilename.value);
     });
@@ -134,7 +133,7 @@
     pbdDownload.addEventListener("click", async () => {
       _GM_download({
         ...template,
-        name: await getIllustPageFilename(illustId, pbdSelect.value).then(requireNonNull),
+        name: await getIllustPageFilename(getIllustId(), pbdSelect.value).then(requireNonNull),
         url: pbdSelect.value
       });
     });
@@ -142,7 +141,7 @@
       for (const page of illustPages) {
         _GM_download({
           ...template,
-          name: await getIllustPageFilename(illustId, page.urls.original).then(requireNonNull),
+          name: await getIllustPageFilename(getIllustId(), page.urls.original).then(requireNonNull),
           url: page.urls.original
         });
       }
